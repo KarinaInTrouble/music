@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>{{ news_item.name }}</h2>
+  <p>{{ news_item.category }}</p>
+  {% if news_item.photo %}
+    <img src="{{ news_item.photo.url }}" alt="{{ news_item.name }}">
+  {% endif %}
+  <div>{{news_item.description}}</div>
+  <p>{{ news_item.date }}</p>
+  <!-- Другие поля новости, если необходимо -->
+{% endblock %}
