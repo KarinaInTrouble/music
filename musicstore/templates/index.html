@@ -173,7 +173,7 @@
       <br>
   <div class="row">
     {% for news_item in latest_news %}
-      <div class="col-md-3 mb-4">
+      <div class="col-md-4 mb-4">
         <div class="card">
           {% if news_item.photo %}
             <img src="{{ news_item.photo.url }}" class="card-img-top" alt="{{ news_item.name }}">
@@ -192,7 +192,7 @@
   <br>
 <div class="row">
 {% for news in action_news %}
-  <div class="col-md-3 mb-4">
+  <div class="col-md-4 mb-4">
     <div class="card">
       {% if news.photo %}
         <img src="{{ news.photo.url }}" class="card-img-top" alt="{{ news.name }}">

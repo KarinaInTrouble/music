@@ -64,9 +64,39 @@
 
 {% block content %}
 
-<div class="text-center">
-    <img src="{% static 'img/tech-work.jpg' %}" alt="Your Image" class="img-fluid">
+<!-- brands.html -->
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">Производители</li>
+          <li class="breadcrumb-item">Добавление</li>
+        </ol>
+      </nav>
+    <h2>Добавить товар</h2>
+      <!-- Форма для добавления товара -->
+  <div class="row">
+    <div class="col-md-6">
+      <form method="post" action="{% url 'add_product' %}" enctype="multipart/form-data" class="mb-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Добавить товар</button>
+      </form>
+    </div>
+
+    <div class="col-md-6">
+        <br>
+        <ul class="list-group">
+              {% for product in products %}
+              <li class="list-group-item"> {{ product.name }} - {{ product.price }} ₸ </li>
+              {% endfor %}
+           <br>
+        </ul>
+    </div>
+    </div>
+
+  </div>
+
 </div>
-
-
+<br>
+<br>
 {% endblock %}

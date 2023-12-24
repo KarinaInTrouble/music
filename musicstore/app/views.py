@@ -38,6 +38,41 @@ def client(request):
     categories = Category.objects.all()
     return render(request, 'client.html', {'categories': categories})
 
+def brand_list(request):
+    categories = Category.objects.all()
+    brands = Manufacturer.objects.all()
+    form = ManufacturerForm()
+
+    if request.method == 'POST':
+        form = ManufacturerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('brand_list')
+
+    return render(request, 'brands.html', {'brands': brands, 'categories': categories, 'form': form})
+
+def brand_edit(request, brand_id):
+    categories = Category.objects.all()
+    brand = get_object_or_404(Manufacturer, id=brand_id)
+
+    if request.method == 'POST':
+        form = ManufacturerForm(request.POST, instance=brand)
+        if form.is_valid():
+            form.save()
+            return redirect('brand_list')
+
+    form = ManufacturerForm(instance=brand)
+    return render(request, 'brand_edit.html', {'form': form, 'brand': brand, 'categories': categories})
+
+def brand_delete(request, brand_id):
+    brand = get_object_or_404(Manufacturer, id=brand_id)
+    
+    if request.method == 'POST':
+        brand.delete()
+        return redirect('brand_list')
+
+    return render(request, 'brand_delete.html', {'brand': brand})
+
 def product_list(request, category_id):
     categories = Category.objects.all()
     category = get_object_or_404(Category, id=category_id)
@@ -61,6 +96,24 @@ def product_list(request, category_id):
         products = products.filter(price__lte=max_price)
 
     return render(request, 'product_list.html', {'categories': categories, 'category': category, 'subcategories': subcategories, 'manufacturers': manufacturers, 'products': products})
+
+def edit_catalog(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('product_list', category_id=product.category.id)
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'edit_catalog.html', {'form': form, 'product': product})
+
+def product_delete(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    category_id = product.category.id
+    product.delete()
+    return redirect('product_list', category_id=category_id)
+
 
 @login_required
 def product_detail(request, product_id):
@@ -93,3 +146,43 @@ def add_review(request, product_id):
 
     return redirect('product_detail', product_id=product_id)
 
+def add_product(request):
+    categories = Category.objects.all()
+    products = Product.objects.all()
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('add_product')  # Замените 'catalog' на имя вашего URL-маршрута для каталога
+    else:
+        form = ProductForm()
+
+    return render(request, 'add_product.html', {'form': form, 'products': products, 'categories': categories})
+
+
+def add_news(request):
+    news_list = News.objects.all()
+    if request.method == 'POST':
+        form = NewsForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('add_news')
+    else:
+        form = NewsForm()
+    return render(request, 'add_news.html', {'form': form, 'news_list': news_list})
+
+def edit_news(request, news_id):
+    news = get_object_or_404(News, id=news_id)
+    if request.method == 'POST':
+        form = NewsForm(request.POST, request.FILES, instance=news)
+        if form.is_valid():
+            form.save()
+            return redirect('add_news')
+    else:
+        form = NewsForm(instance=news)
+    return render(request, 'edit_news.html', {'form': form, 'news': news})
+
+def delete_news(request, news_id):
+    news = get_object_or_404(News, id=news_id)
+    news.delete()
+    return redirect('add_news')

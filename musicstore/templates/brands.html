@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block nav_block %}
+
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'manager' %}">Профиль</a>
+</li>
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Каталог
+  </a>
+  <ul class="dropdown-menu">
+    {% if user.is_authenticated %}
+      {% for category in categories %}
+        <li><a class="dropdown-item" href="{% url 'product_list' category.id %}">{{ category.name }}</a></li>
+      {% endfor %}
+    {% else %}
+      {% for category in categories %}
+      <li><a class="dropdown-item" href="{% url 'login' %}">{{ category.name }}</a></li>
+      {% endfor %}
+    {% endif %}
+  </ul>
+</li>
+
+  <li class="nav-item">
+      <a class="nav-link" href="{% url 'add_product' %}">Панель управления</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link" href="{% url 'brand_list' %}">Бренды</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link" href="{% url 'add_news' %}">Новости</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="#">Заказы</a>
+  </li>
+
+<li class="nav-item">
+    <a class="nav-link" href="#"></a>
+</li>
+{% if user.is_authenticated %}
+  <!-- Если пользователь авторизован -->
+  {% if user.is_active and user.is_staff %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'manager' %}">{{ user.username }}</a>
+    </li>
+  {% elif user.is_active %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'client' %}">{{ user.username }}</a>
+    </li>
+  {% endif %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+  </li>
+{% else %}
+  <!-- Если пользователь не авторизован -->
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'login' %}">Войти</a>
+  </li>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<!-- brands.html -->
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">Производители</li>
+          <li class="breadcrumb-item">Добавление</li>
+        </ol>
+      </nav>
+    <h2>Список производителей</h2>
+  
+    <!-- Форма для добавления бренда -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <form method="post" action="{% url 'brand_list' %}" class="mb-3">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="id_name" class="form-label">Название производителя:</label>
+            {{ form.name}}
+          </div>
+          <div class="mb-3">
+            <label for="id_description" class="form-label">Описание производителя:</label>
+            {{ form.description}}
+          </div>
+          <button type="submit" class="btn btn-primary">Добавить производителя</button>
+        </form>
+      </div>
+    </div>
+  
+    <!-- Список добавленных брендов в виде карточек -->
+    <div class="row">
+      {% for brand in brands %}
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{ brand.name }}</h5>
+              <a href="{% url 'brand_edit' brand.id %}" class="btn btn-warning btn">Редактировать</a>
+              <a href="{% url 'brand_delete' brand.id %}" class="btn btn-danger btn">Удалить</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  
+
+
+
+{% endblock %}

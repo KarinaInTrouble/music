@@ -78,31 +78,36 @@
 
 <br>
 
-<!-- Список товаров -->
 <div class="row">
-    {% for product in products %}
-      <div class="col-md-4">
-        <div class="card mb-4">
-          <img src="{{ product.photo.url }}" class="card-img-top" alt="{{ product.name }}">
-          <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text"> Артикул: {{ product.article }}</p>
-            <p class="card-text">Бренд: {{ product.brand }}</p>
-            <p class="card-text"><strong>Цена: {{ product.price }} ₸</strong></p>
-            <a href="{% url 'product_detail' product.id %}" class="btn btn-dark">Детали</a>
-            {% if request.user.is_authenticated %}
-              <form method="post" action="{% url 'add_to_favorites' product.id %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-dark" {% if is_favorite %}disabled{% endif %}>
-                  {% if is_favorite %}В избранном{% else %}Добавить в избранное{% endif %}
-                </button>
-              </form>
-            {% endif %}
-          </div>
+  {% for product in products %}
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <img src="{{ product.photo.url }}" class="card-img-top" alt="{{ product.name }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text"> Артикул: {{ product.article }}</p>
+          <p class="card-text">Бренд: {{ product.brand }}</p>
+          <p class="card-text"><strong>Цена: {{ product.price }} ₸</strong></p>
+          <a href="{% url 'product_detail' product.id %}" class="btn btn-dark">Детали</a>
+
+          {% if request.user.is_authenticated %}
+              {% if request.user.is_active and request.user.is_staff %}
+                  <a href="{% url 'product_edit' product.id %}" class="btn btn-dark">Редактировать</a>
+                  <a href="{% url 'product_delete' product.id %}" class="btn btn-dark">Удалить</a>
+              {% else %}
+                  <form method="post" action="{% url 'add_to_favorites' product.id %}" style="display: inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-dark" {% if is_favorite %}disabled{% endif %}>
+                          {% if is_favorite %}В избранном{% else %}Добавить в избранное{% endif %}
+                      </button>
+                  </form>
+              {% endif %}
+          {% endif %}
         </div>
       </div>
-    {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
+</div>
 
 
 {% endblock %}

@@ -24,13 +24,13 @@
 </li>
 
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'add_product' %}">Панель управления</a>
+      <a class="nav-link" href="{% url 'add_product' }">Панель управления</a>
   </li>
   <li class="nav-item">
       <a class="nav-link" href="{% url 'brand_list' %}">Бренды</a>
   </li>
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'add_news' %}">Новости</a>
+      <a class="nav-link" href="{% url 'add_news' }">Новости</a>
   </li>
   <li class="nav-item">
     <a class="nav-link" href="#">Заказы</a>
@@ -64,9 +64,46 @@
 
 {% block content %}
 
-<div class="text-center">
-    <img src="{% static 'img/tech-work.jpg' %}" alt="Your Image" class="img-fluid">
+<!-- brands.html -->
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">Новости</li>
+          <li class="breadcrumb-item">Добавление</li>
+        </ol>
+      </nav>
+    <h2>Добавить товар</h2>
+      <!-- Форма для добавления товара -->
+  <div class="row">
+    <div class="col-md-6">
+        <form method="post" action="{% url 'add_news' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-dark">Добавить новость</button>
+        </form>
+    </div>
+
+    <div class="col-md-6">
+        <br>
+        {% for news in news_list %}
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{ news.name }}</h5>
+              <p class="card-text"><small class="text-muted">{{ news.date|date:"d/m/Y" }}</small></p>
+              <a href="{% url 'edit_news' news.id %}" class="btn btn-primary">Редактировать</a>
+              <a href="{% url 'delete_news' news.id %}" class="btn btn-danger">Удалить</a>
+            </div>
+          </div>
+          <br>
+      {% endfor %}
+
+        
+    </div>
+    </div>
+
+  </div>
+
 </div>
-
-
+<br>
+<br>
 {% endblock %}
