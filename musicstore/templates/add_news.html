@@ -24,13 +24,13 @@
 </li>
 
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'add_product' }">Панель управления</a>
+      <a class="nav-link" href="{% url 'add_product' %}">Панель управления</a>
   </li>
   <li class="nav-item">
       <a class="nav-link" href="{% url 'brand_list' %}">Бренды</a>
   </li>
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'add_news' }">Новости</a>
+      <a class="nav-link" href="#">Новости</a>
   </li>
   <li class="nav-item">
     <a class="nav-link" href="#">Заказы</a>
@@ -72,7 +72,7 @@
           <li class="breadcrumb-item">Добавление</li>
         </ol>
       </nav>
-    <h2>Добавить товар</h2>
+    <h2>Добавить новость</h2>
       <!-- Форма для добавления товара -->
   <div class="row">
     <div class="col-md-6">
@@ -86,16 +86,35 @@
     <div class="col-md-6">
         <br>
         {% for news in news_list %}
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">{{ news.name }}</h5>
-              <p class="card-text"><small class="text-muted">{{ news.date|date:"d/m/Y" }}</small></p>
-              <a href="{% url 'edit_news' news.id %}" class="btn btn-primary">Редактировать</a>
-              <a href="{% url 'delete_news' news.id %}" class="btn btn-danger">Удалить</a>
-            </div>
-          </div>
-          <br>
-      {% endfor %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title"><span class="badge bg-warning" style="font-size: 12pt;">{{ forloop.counter }}</span> {{ news.name }}</h5>
+            <p class="card-text"><small class="text-muted">{{ news.date|date:"d/m/Y" }}</small></p>
+            <a href="{% url 'edit_news' news.id %}" class="btn btn-dark">Редактировать</a>
+            <a href="{% url 'delete_news' news.id %}" class="btn btn-dark">Удалить</a>
+        </div>
+    </div>
+    <br>
+{% endfor %}
+
+<!-- Добавляем пагинацию -->
+<div class="pagination">
+    <span class="step-links">
+        {% if news_list.has_previous %}
+            <a href="?page=1">&laquo; первая</a>
+            <a href="?page={{ news_list.previous_page_number }}">предыдущая</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ news_list.number }} из {{ news_list.paginator.num_pages }}.
+        </span>
+
+        {% if news_list.has_next %}
+            <a href="?page={{ news_list.next_page_number }}">следующая</a>
+            <a href="?page={{ news_list.paginator.num_pages }}">последняя &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 
         
     </div>

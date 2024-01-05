@@ -27,10 +27,10 @@
       <a class="nav-link" href="#">Мои заказы</a>
   </li>
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'favorites' %}">Фавориты</a>
+      <a class="nav-link" href="{% url 'favorites'  %}">Фавориты</a>
   </li>
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'reviews' %}">Мои отзывы</a>
+      <a class="nav-link" href="#">Мои отзывы</a>
   </li>
 
 <li class="nav-item">
@@ -60,46 +60,53 @@
 {% endblock %}
 
 {% block content %}
+
 <br>
-<div class="text-center">
-  {% if user_profile.photo %}
-      <img src="{{ user_profile.photo.url }}" alt="Your Image" class="rounded-circle img-fluid" style="width: 30%; height: 30%;">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">Клиент</li>
+      <li class="breadcrumb-item">Список отзывов</li>
+    </ol>
+  </nav>
+
+  <h2>Ваши отзывы</h2>
+
+  {% if reviews %}
+    <div class="row">
+      {% for review in reviews %}
+        <div class="col-md-6 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><a href="{% url 'product_detail' review.subject.id %}" style="text-decoration: none;">{{ review.subject.name }}</a></h5>
+              <p class="card-text">{{ review.feedback }}</p>
+              <p class="card-text"><strong>Оценка: {{ review.stars }}/5</strong></p>
+              <!-- Добавьте другие поля отзыва, если необходимо -->
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="pagination">
+      <span class="step-links">
+        {% if reviews.has_previous %}
+          <a href="?page=1">&laquo; первая</a>
+          <a href="?page={{ reviews.previous_page_number }}">предыдущая</a>
+        {% endif %}
+
+        <span class="current">
+          Страница {{ reviews.number }} из {{ reviews.paginator.num_pages }}.
+        </span>
+
+        {% if reviews.has_next %}
+          <a href="?page={{ reviews.next_page_number }}">следующая</a>
+          <a href="?page={{ reviews.paginator.num_pages }}">последняя &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  {% else %}
+    <p>У вас нет отзывов.</p>
   {% endif %}
-</div>
-<br>
-<div class="text-center">
-<h2>Профиль пользователя</h2>
-<br>
-{% if user_profile.full_name %}
-  <p><strong>ФИО:</strong> {{ user_profile.full_name }}</p>
-{% endif %}
-{% if user_profile.birth_date %}
-  <p><strong>Дата рождения:</strong> {{ user_profile.birth_date|date:"d/m/Y" }}</p>
-{% endif %}
-{% if user_profile.email %}
-  <p><strong>Email:</strong> {{ user_profile.email }}</p>
-{% endif %}
-{% if user_profile.phone_number %}
-  <p><strong>Номер телефона:</strong> {{ user_profile.phone_number }}</p>
-{% endif %}
-<br>
-<a href="{% url 'edit_client_profile' %}" class="btn btn-dark">Редактировать профиль</a>
-</div>
-{% if form.errors %}
-  <!-- Отображение ошибок формы -->
-  <p>Исправьте следующие ошибки:</p>
-  {{ form.errors }}
-{% else %}
-  <!-- Отображение формы только если она не была отправлена или была отправлена без ошибок -->
-  {% if not form.instance.pk %}
-    <h3>Заполнить профиль</h3>
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Сохранить</button>
-    </form>
-  {% endif %}
-{% endif %}
 
 
 {% endblock %}

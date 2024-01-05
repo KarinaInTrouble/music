@@ -25,13 +25,13 @@
   </ul>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="#">Акции</a>
+  <a class="nav-link" href="#section1">Акции</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="#">Доставка</a>
+    <a class="nav-link" href="#section2">Доставка</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="#">Контакты</a>
+    <a class="nav-link" href="#section3">Контакты</a>
 </li>
 <li class="nav-item">
     <a class="nav-link" href="#"></a>
@@ -169,7 +169,7 @@
 
       <br>
       <br>
-      <h2 class="orange-line">Последние новости</h2>
+      <h2 class="orange-line" id="section1" >Последние новости</h2>
       <br>
   <div class="row">
     {% for news_item in latest_news %}
@@ -207,7 +207,7 @@
 {% endfor %}
 </div>
 <br>
-<h2 class="orange-line">Условия доставки</h2>
+<h2 class="orange-line" id="section2">Условия доставки</h2>
 <br>
 <div class="row align-items-center">
   <!-- Левая часть - фото -->
@@ -255,7 +255,7 @@
 </div>
 
 <br>
-<h2>Контакты</h2>
+<h2 id="section3">Контакты</h2>
 <div style="width: 100%; position: relative;">
   <br>
   <iframe

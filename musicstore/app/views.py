@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
+from django.db.models import Max, Min, Avg
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import *
 from .forms import *
 
@@ -19,6 +21,38 @@ def registration_view(request):
     # Возвращаем HttpResponse или render для GET-запроса
     return render(request, 'registration/register.html', {'form': form})
 
+@login_required
+def client(request):
+    categories = Category.objects.all()
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        if form.is_valid():
+            form.instance.user = request.user
+            form.save()
+            return redirect('client')  # Используйте redirect для перенаправления
+    else:
+        form = UserProfileForm(instance=user_profile)
+
+    return render(request, 'client.html', {'user_profile': user_profile, 'categories': categories, 'form': form})
+
+@login_required
+def edit_client_profile(request):
+    categories = Category.objects.all()
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        if form.is_valid():
+            form.instance.user = request.user
+            form.save()
+            return redirect('client')
+    else:
+        form = UserProfileForm(instance=user_profile)
+
+    return render(request, 'edit_client_profile.html', {'form': form, 'categories': categories})
+
 def index(request):
     categories = Category.objects.all()
     action_category = NewsCategory.objects.get(type='Акции')
@@ -34,14 +68,21 @@ def manager(request):
     categories = Category.objects.all()
     return render(request, 'manager.html', {'categories': categories})
 
-def client(request):
-    categories = Category.objects.all()
-    return render(request, 'client.html', {'categories': categories})
 
 def brand_list(request):
     categories = Category.objects.all()
-    brands = Manufacturer.objects.all()
+    all_brands = Manufacturer.objects.all()
     form = ManufacturerForm()
+
+    paginator = Paginator(all_brands, 9)
+    page = request.GET.get('page')
+
+    try:
+        brands = paginator.page(page)
+    except PageNotAnInteger:
+        brands = paginator.page(1)
+    except EmptyPage:
+        brands = paginator.page(paginator.num_pages)
 
     if request.method == 'POST':
         form = ManufacturerForm(request.POST)
@@ -66,12 +107,8 @@ def brand_edit(request, brand_id):
 
 def brand_delete(request, brand_id):
     brand = get_object_or_404(Manufacturer, id=brand_id)
-    
-    if request.method == 'POST':
-        brand.delete()
-        return redirect('brand_list')
-
-    return render(request, 'brand_delete.html', {'brand': brand})
+    brand.delete()
+    return redirect('brand_list')
 
 def product_list(request, category_id):
     categories = Category.objects.all()
@@ -79,6 +116,8 @@ def product_list(request, category_id):
     subcategories = Subcategory.objects.filter(category=category)
     manufacturers = Manufacturer.objects.all()
     products = Product.objects.filter(category=category)
+    max_range = products.aggregate(Max('price'))['price__max']
+    min_range = products.aggregate(Min('price'))['price__min']
 
     # Фильтрация по подкатегории
     subcategory_id = request.GET.get('subcategory')
@@ -94,8 +133,28 @@ def product_list(request, category_id):
     max_price = request.GET.get('price')
     if max_price:
         products = products.filter(price__lte=max_price)
+    
+    
+    paginator = Paginator(products, 9)
+    page = request.GET.get('page')
 
-    return render(request, 'product_list.html', {'categories': categories, 'category': category, 'subcategories': subcategories, 'manufacturers': manufacturers, 'products': products})
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        # Если параметр страницы не является целым числом, показать первую страницу
+        products = paginator.page(1)
+    except EmptyPage:
+        # Если номер страницы больше максимального, показать последнюю страницу
+        products = paginator.page(paginator.num_pages)
+
+    return render(request,'product_list.html', 
+                {'categories': categories, 
+                 'category': category, 
+                 'subcategories': subcategories, 
+                 'manufacturers': manufacturers, 
+                 'products': products,
+                 'max_range': max_range,
+                 'min_range': min_range})
 
 def edit_catalog(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -121,8 +180,9 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = Review.objects.filter(subject=product)
     is_favorite = Favorite.objects.filter(subject=product, user=request.user).exists()
+    average_rating = reviews.aggregate(Avg('stars'))['stars__avg']
 
-    return render(request, 'product_detail.html', {'categories': categories,'product': product, 'reviews': reviews, 'is_favorite': is_favorite})
+    return render(request, 'product_detail.html', {'categories': categories,'product': product, 'reviews': reviews, 'is_favorite': is_favorite, "average_rating": average_rating})
 
 @login_required
 def add_to_favorites(request, product_id):
@@ -149,11 +209,23 @@ def add_review(request, product_id):
 def add_product(request):
     categories = Category.objects.all()
     products = Product.objects.all()
+
+    # Добавляем пагинацию
+    paginator = Paginator(products, 10)
+    page = request.GET.get('page', 1)
+
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
+
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('add_product')  # Замените 'catalog' на имя вашего URL-маршрута для каталога
+            return redirect('add_product')
     else:
         form = ProductForm()
 
@@ -162,6 +234,18 @@ def add_product(request):
 
 def add_news(request):
     news_list = News.objects.all()
+
+    # Добавляем пагинацию
+    paginator = Paginator(news_list, 5)
+    page = request.GET.get('page')
+
+    try:
+        news_list = paginator.page(page)
+    except PageNotAnInteger:
+        news_list = paginator.page(1)
+    except EmptyPage:
+        news_list = paginator.page(paginator.num_pages)
+
     if request.method == 'POST':
         form = NewsForm(request.POST, request.FILES)
         if form.is_valid():
@@ -169,6 +253,7 @@ def add_news(request):
             return redirect('add_news')
     else:
         form = NewsForm()
+
     return render(request, 'add_news.html', {'form': form, 'news_list': news_list})
 
 def edit_news(request, news_id):
@@ -186,3 +271,31 @@ def delete_news(request, news_id):
     news = get_object_or_404(News, id=news_id)
     news.delete()
     return redirect('add_news')
+
+
+#Клиент
+
+@login_required
+def favorites(request):
+    categories = Category.objects.all()
+    user = request.user
+    favorites = Favorite.objects.filter(user=user)
+    return render(request, 'favorites.html', {'categories': categories,'favorites': favorites})
+
+@login_required
+def reviews(request):
+    categories = Category.objects.all()
+    user = request.user
+    all_reviews = Review.objects.filter(user=user)
+
+    paginator = Paginator(all_reviews, 10)
+    page = request.GET.get('page')
+
+    try:
+        reviews = paginator.page(page)
+    except PageNotAnInteger:
+        reviews = paginator.page(1)
+    except EmptyPage:
+        reviews = paginator.page(paginator.num_pages)
+
+    return render(request, 'reviews.html', {'categories': categories, 'reviews': reviews})

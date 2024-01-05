@@ -4,7 +4,7 @@
 {% block nav_block %}
 
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'manager' %}">Профиль</a>
+    <a class="nav-link" href="{% url 'client' %}">Профиль</a>
 </li>
 <li class="nav-item dropdown">
   <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -24,16 +24,13 @@
 </li>
 
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'add_product' %}">Панель управления</a>
+      <a class="nav-link" href="#">Мои заказы</a>
   </li>
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'brand_list' %}">Бренды</a>
+      <a class="nav-link" href="#">Фавориты</a>
   </li>
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'add_news' %}">Новости</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#">Заказы</a>
+      <a class="nav-link" href="{% url 'reviews'  %}">Мои отзывы</a>
   </li>
 
 <li class="nav-item">
@@ -64,28 +61,38 @@
 
 {% block content %}
 
-<!-- brand_edit.html -->
-<div class="container mt-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item">Редактировать</li>
-          <li class="breadcrumb-item">Производитель</li>
-          <li class="breadcrumb-item">{{ brand.name }}</li>
-        </ol>
-      </nav>
+<br>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">Клиент</li>
+      <li class="breadcrumb-item">Список избранных товаров</li>
+    </ol>
+  </nav>
 
-    <h2>Редактирование производителя: {{ brand.name }}</h2>
-  
-    <!-- Форма для редактирования бренда -->
+<h2>Избранные товары</h2>
+<br>
+  {% if favorites %}
     <div class="row">
-      <div class="col-md-6">
-        <form method="post" action="{% url 'brand_edit' brand.id %}" class="mb-3">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" class="btn btn-dark">Сохранить изменения</button>
-        </form>
-      </div>
+      {% for favorite in favorites %}
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <div class="badge bg-warning" style="color: black; position: absolute; top: 0; left: 0; z-index: 1; padding: 8px; font-size: 18pt;">
+                {{ favorite.subject.price|floatformat:0 }} ₸
+            </div>
+            <img src="{{ favorite.subject.photo.url }}" class="card-img-top" alt="{{ favorite.subject.name }}">
+            <div class="card-body">
+              <h5 class="card-title">{{ favorite.subject.name }}</h5>
+              <p class="card-text"> Артикул: {{ favorite.subject.article }}</p>
+              <p class="card-text">Бренд: {{ favorite.subject.brand }}</p>
+              <a href="{% url 'product_detail' favorite.subject.id %}" class="btn btn-dark">Детали</a>
+              <a href="#" class="btn btn-dark">Заказать</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
     </div>
-  </div>
+  {% else %}
+    <p>У вас нет избранных товаров.</p>
+  {% endif %}
 
 {% endblock %}

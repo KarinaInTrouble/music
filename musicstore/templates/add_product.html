@@ -68,30 +68,51 @@
 <div class="container mt-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item">Производители</li>
+          <li class="breadcrumb-item">Панель управления</li>
           <li class="breadcrumb-item">Добавление</li>
         </ol>
       </nav>
     <h2>Добавить товар</h2>
-      <!-- Форма для добавления товара -->
   <div class="row">
     <div class="col-md-6">
       <form method="post" action="{% url 'add_product' %}" enctype="multipart/form-data" class="mb-3">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Добавить товар</button>
+        <button type="submit" class="btn btn-dark">Добавить товар</button>
       </form>
     </div>
 
     <div class="col-md-6">
-        <br>
-        <ul class="list-group">
-              {% for product in products %}
-              <li class="list-group-item"> {{ product.name }} - {{ product.price }} ₸ </li>
-              {% endfor %}
-           <br>
-        </ul>
-    </div>
+      <br>
+      <ul class="list-group">
+          {% for product in products %}
+              <li class="list-group-item" style="font-size: 13pt;">
+                  <span class="badge bg-warning" style="font-size: 12pt;">{{ forloop.counter }}</span>
+                  {{ product.category }} / {{ product.name }} - {{ product.price }} ₸
+              </li>
+          {% endfor %}
+      </ul>
+      <br>
+  
+      <!-- Добавляем пагинацию -->
+      <div class="pagination">
+          <span class="step-links">
+              {% if products.has_previous %}
+                  <a href="?page=1">&laquo; первая</a>
+                  <a href="?page={{ products.previous_page_number }}">предыдущая</a>
+              {% endif %}
+  
+              <span class="current">
+                  Страница {{ products.number }} из {{ products.paginator.num_pages }}.
+              </span>
+  
+              {% if products.has_next %}
+                  <a href="?page={{ products.next_page_number }}">следующая</a>
+                  <a href="?page={{ products.paginator.num_pages }}">последняя &raquo;</a>
+              {% endif %}
+          </span>
+      </div>
+  </div>
     </div>
 
   </div>

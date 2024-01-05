@@ -1,6 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    full_name = models.CharField("ФИО", max_length=255, blank=True, null=True)
+    photo = models.FileField("Фото", upload_to="profile_photos/",  blank=True, null=True)
+    birth_date = models.DateField("Дата рождения", blank=True, null=True)
+    email = models.EmailField("Email", blank=True, null=True)
+    phone_number = models.CharField("Номер телефона", max_length=11, blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+    
 class Category(models.Model):
     name = models.CharField("Название категории", max_length=255)
 
@@ -55,7 +66,6 @@ class Review(models.Model):
     feedback = models.TextField("Отзыв")
     stars = models.PositiveIntegerField("Оценка", default=5)
     
-
     class Meta:
         verbose_name_plural = "Отзывы"
 

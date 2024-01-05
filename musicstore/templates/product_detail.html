@@ -63,16 +63,24 @@
   <div class="row">
     <div class="col-md-8">
       <h1>{{ product.name }}</h1>
-      <p style="font-size: smaller; color: #888;">
+      <p style="font-size: 13pt; color: #888;">
         {{ product.article }} | {{ product.brand.name }}
       </p>
-        <h3>Цена</h3>
-        <h3 class="card-text" style = "border-bottom: 2px solid rgb(226, 101, 43); margin-bottom: 10px; width: 30%;">{{product.price}} ₸</h3>
+      {% if average_rating %}
+    <h4><i class="bi bi-chat-heart"></i> Средняя оценка: {{ average_rating|floatformat:1 }}</h4>
+    {% else %}
+    <h4><i class="bi bi-chat-heart"></i> Пока нет отзывов</h4>
+    {% endif %}
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 position-relative">
       <!-- Фото товара -->
-      <img calss="img-thumbnail" src="{{ product.photo.url }}" alt="{{ product.name }}" class="img-fluid">
-    </div>
+      <img class="img-thumbnail img-fluid" src="{{ product.photo.url }}" alt="{{ product.name }}">
+      
+      <!-- Badge на углу картинки -->
+      <div class="badge bg-warning text-dark position-absolute top-0 start-0 p-2 m-2">
+          <h2>{{ product.price|floatformat:0 }} ₸</h2>
+      </div>
+  </div>
   </div>
 
   <!-- Описание товара -->
@@ -138,6 +146,7 @@
           <p class="card-text">{{ review.feedback }}</p>
         </div>
       </div>
+      <br>
     {% endfor %}
 
   </div>

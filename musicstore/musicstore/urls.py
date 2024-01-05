@@ -23,7 +23,6 @@ from django.conf import settings
 urlpatterns = [
     path('', index, name='index'),
     path('manager', manager, name='manager'),
-    path('client', client, name='client'),
     path('news/add/', add_news, name='add_news'),
     path('news/<int:news_id>/edit/', edit_news, name='edit_news'),
     path('news/<int:news_id>/delete/', delete_news, name='delete_news'),
@@ -38,6 +37,12 @@ urlpatterns = [
     path('add_to_favorites/<int:product_id>/', add_to_favorites, name='add_to_favorites'),
     path('add_review/<int:product_id>/', add_review, name='add_review'),
     path('news/<int:pk>/', news_detail, name='news_detail'),
+
+    path('favorites', favorites, name='favorites'),
+    path('reviews', reviews, name='reviews'),
+    path('client', client, name='client'),
+    path('edit_client_profile/', edit_client_profile, name='edit_client_profile'),
+
     path('register/', registration_view, name='register'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),

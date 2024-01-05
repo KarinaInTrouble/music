@@ -87,7 +87,7 @@
             <label for="id_description" class="form-label">Описание производителя:</label>
             {{ form.description}}
           </div>
-          <button type="submit" class="btn btn-primary">Добавить производителя</button>
+          <button type="submit" class="btn btn-dark">Добавить производителя</button>
         </form>
       </div>
     </div>
@@ -98,14 +98,35 @@
         <div class="col-md-4 mb-4">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">{{ brand.name }}</h5>
-              <a href="{% url 'brand_edit' brand.id %}" class="btn btn-warning btn">Редактировать</a>
-              <a href="{% url 'brand_delete' brand.id %}" class="btn btn-danger btn">Удалить</a>
+              <h5 class="card-title"><span class="badge bg-warning">{{ forloop.counter }}</span> {{ brand.name }}</h5>
+              <a href="{% url 'brand_edit' brand.id %}" class="btn btn-dark">Редактировать</a>
+              <a href="{% url 'brand_delete' brand.id %}" class="btn btn-dark">Удалить</a>
             </div>
           </div>
         </div>
       {% endfor %}
     </div>
+
+    <div class="pagination">
+      <span class="step-links">
+        {% if brands.has_previous %}
+          <a href="?page=1">&laquo; первая</a>
+          <a href="?page={{ brands.previous_page_number }}">предыдущая</a>
+        {% endif %}
+    
+        <span class="current">
+          Страница {{ brands.number }} из {{ brands.paginator.num_pages }}.
+        </span>
+    
+        {% if brands.has_next %}
+          <a href="?page={{ brands.next_page_number }}">следующая</a>
+          <a href="?page={{ brands.paginator.num_pages }}">последняя &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+
+    <br>
+    <br>
   </div>
   
 

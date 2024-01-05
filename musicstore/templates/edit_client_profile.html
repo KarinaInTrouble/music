@@ -4,7 +4,7 @@
 {% block nav_block %}
 
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'manager' %}">Профиль</a>
+    <a class="nav-link" href="{% url 'client' %}">Профиль</a>
 </li>
 <li class="nav-item dropdown">
   <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -24,16 +24,13 @@
 </li>
 
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'add_product' %}">Панель управления</a>
+      <a class="nav-link" href="#">Мои заказы</a>
   </li>
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'brand_list' %}">Бренды</a>
+      <a class="nav-link" href="{% url 'favorites' %}">Фавориты</a>
   </li>
   <li class="nav-item">
-      <a class="nav-link" href="{% url 'add_news' %}">Новости</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="#">Заказы</a>
+      <a class="nav-link" href="{% url 'reviews' %}">Мои отзывы</a>
   </li>
 
 <li class="nav-item">
@@ -64,28 +61,18 @@
 
 {% block content %}
 
-<!-- brand_edit.html -->
-<div class="container mt-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item">Редактировать</li>
-          <li class="breadcrumb-item">Производитель</li>
-          <li class="breadcrumb-item">{{ brand.name }}</li>
-        </ol>
-      </nav>
-
-    <h2>Редактирование производителя: {{ brand.name }}</h2>
-  
-    <!-- Форма для редактирования бренда -->
-    <div class="row">
-      <div class="col-md-6">
-        <form method="post" action="{% url 'brand_edit' brand.id %}" class="mb-3">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" class="btn btn-dark">Сохранить изменения</button>
-        </form>
-      </div>
-    </div>
-  </div>
+<div class="text-center">
+    {% if user_profile.photo %}
+        <img src="{{ user_profile.photo.url }}" alt="Your Image" class="img-fluid">
+    {% endif %}
+</div>
+<br>
+<h2>Редактирование профиля пользователя</h2>
+<br>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-dark">Сохранить</button>
+</form>
 
 {% endblock %}
