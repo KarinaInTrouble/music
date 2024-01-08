@@ -69,4 +69,10 @@ class NewsCategoryForm(forms.ModelForm):
         widgets = {
             'type': forms.TextInput(attrs={'class': 'form-control'}),
         }
-        
+
+class OrderForm(forms.Form):
+    full_name = forms.CharField(label='ФИО', max_length=255)
+    phone_number = forms.CharField(label='Телефон', max_length=20)
+    email = forms.EmailField(label='Email')
+    delivery_address = forms.CharField(label='Адрес доставки', max_length=255)
+    comments = forms.CharField(label='Комментарии', widget=forms.Textarea, required=False)

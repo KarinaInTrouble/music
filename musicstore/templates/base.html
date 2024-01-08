@@ -68,6 +68,24 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     {% block nav_block  %}
+
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'favorites' %}">Избранное
+                            {% if favorites_count > 0 %}
+                                <span class="badge bg-secondary">{{ favorites_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'view_cart' %}">Корзина
+                            {% if cart_count > 0 %}
+                                <span class="badge bg-secondary">{{ cart_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    {% endif %}
+
                     {% endblock %}
                 </ul>
             </div>

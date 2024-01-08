@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Оформление заказа</h1>
+
+    <form method="post" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-dark">Оформить заказ</button>
+    </form>
+
+    <hr>
+    <h2>Продукты в корзине:</h2>
+    <ul>
+        {% for cart_product in cart_products %}
+            <li>{{ cart_product.product.name }} - {{ cart_product.quantity }} шт. ({{ cart_product.product.price }} ₸ за шт.)</li>
+        {% endfor %}
+    </ul>
+    <p><strong>Итоговая сумма: {{ total_price }} ₸</strong></p>
+
+{% endblock %}

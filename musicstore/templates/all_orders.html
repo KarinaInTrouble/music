@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Все заказы</h1>
+    
+    {% if orders %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Заказ</th>
+                    <th>Дата создания</th>
+                    <th>Пользователь</th>
+                    <th>Email</th>
+                    <th>Товары</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.date_created }}</td>
+                        <td>{{ order.full_name }}</td>
+                        <td>{{ order.email }}</td>
+                        <td>
+                            <ul>
+                                {% for order_product in order.orderproduct_set.all %}
+                                    <li>{{ order_product.product.name }} - {{ order_product.quantity }} шт.</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Пока нет заказов.</p>
+    {% endif %}
+{% endblock %}

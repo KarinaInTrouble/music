@@ -37,11 +37,17 @@ urlpatterns = [
     path('add_to_favorites/<int:product_id>/', add_to_favorites, name='add_to_favorites'),
     path('add_review/<int:product_id>/', add_review, name='add_review'),
     path('news/<int:pk>/', news_detail, name='news_detail'),
+    path('all_orders/', all_orders, name='all_orders'),
 
     path('favorites', favorites, name='favorites'),
     path('reviews', reviews, name='reviews'),
     path('client', client, name='client'),
     path('edit_client_profile/', edit_client_profile, name='edit_client_profile'),
+    path('add_to_cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
+    path('view_cart/', view_cart, name='view_cart'),
+    path('remove_from_cart/<int:product_id>/', remove_from_cart, name='remove_from_cart'),
+    path('checkout/', checkout, name='checkout'),
+    path('user_orders/', user_orders, name='user_orders'),
 
     path('register/', registration_view, name='register'),
     path('accounts/', include('django.contrib.auth.urls')),

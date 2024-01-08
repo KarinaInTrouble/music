@@ -34,6 +34,13 @@
     <li class="nav-item">
       <a class="nav-link" href="{% url 'client' %}">{{ user.username }}</a>
     </li>
+    <li class="nav-item">
+    <a class="nav-link" href="{% url 'view_cart' %}">Корзина
+    {% if cart_count > 0 %}
+    <span class="badge bg-secondary">{{ cart_count }}</span>
+    {% endif %}
+    </a>
+    </li>
   {% endif %}
   <li class="nav-item">
     <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
@@ -106,6 +113,10 @@
                           {% if is_favorite %}В избранном{% else %}Добавить в избранное{% endif %}
                       </button>
                   </form>
+                  <form method="post" action="{% url 'add_to_cart' product.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-dark">Добавить в корзину</button>
+                </form>
               {% endif %}
           {% endif %}
         </div>

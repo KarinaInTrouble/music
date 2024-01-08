@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Ваши заказы</h1>
+    
+    {% if orders %}
+        <ul>
+            {% for order in orders %}
+                <li>
+                    Заказ #{{ order.id }} ({{ order.date_created }}):
+                    <ul>
+                        {% for order_product in order.orderproduct_set.all %}
+                            <li>{{ order_product.product.name }} - {{ order_product.quantity }} шт.</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>У вас пока нет заказов.</p>
+    {% endif %}
+{% endblock %}

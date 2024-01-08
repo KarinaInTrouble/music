@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Корзина</h2>
+  <br>
+  {% for cart_product in cart_products %}
+    <p>{{ cart_product.product.name }} х {{ cart_product.quantity }} шт - Цена: {{ cart_product.product.price }} ₸</p>
+    <form method="post" action="{% url 'remove_from_cart' cart_product.product.id %}" style="display: inline;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Удалить</button>
+    </form>
+  {% endfor %}
+
+  <p>Total Price: {{ total_price }} ₸</p>
+
+  <form method="post" action="{% url 'checkout' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Оформить заказ</button>
+  </form>
+{% endblock %}

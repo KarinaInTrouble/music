@@ -1,9 +1,17 @@
 from django.contrib import admin
 from .models import *
-# Register your models here.
 
-from django.contrib import admin
-from .models import Category, Subcategory, Manufacturer, Product, Review, Favorite, Order, OrderItem, OrderProcessing, NewsCategory, News
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('user_profile',)
+
+class CartProductInline(admin.TabularInline):
+    model = CartProduct
+    extra = 1
+
+@admin.register(CartProduct)
+class CartProductAdmin(admin.ModelAdmin):
+    list_display = ('cart', 'product', 'quantity')
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -30,17 +38,6 @@ class ReviewAdmin(admin.ModelAdmin):
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('subject', 'user')
 
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ('user', 'total_price', 'order_date')
-
-@admin.register(OrderItem)
-class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ('order', 'product', 'quantity')
-
-@admin.register(OrderProcessing)
-class OrderProcessingAdmin(admin.ModelAdmin):
-    list_display = ('order', 'status', 'processing_date')
 
 @admin.register(NewsCategory)
 class NewsCategoryAdmin(admin.ModelAdmin):
@@ -50,3 +47,11 @@ class NewsCategoryAdmin(admin.ModelAdmin):
 class NewsAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'description', 'date')
     search_fields = ('name', 'description')
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('user', 'full_name', 'date_created')
+
+class OrderProductInline(admin.TabularInline):
+    model = OrderProduct
+    extra = 1  # Количество пустых форм для добавления
