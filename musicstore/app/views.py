@@ -235,6 +235,7 @@ def add_product(request):
 
 
 def add_news(request):
+    categories = Category.objects.all()
     news_list = News.objects.all()
 
     # Добавляем пагинацию
@@ -256,9 +257,10 @@ def add_news(request):
     else:
         form = NewsForm()
 
-    return render(request, 'add_news.html', {'form': form, 'news_list': news_list})
+    return render(request, 'add_news.html', {'form': form, 'news_list': news_list, 'categories': categories})
 
 def edit_news(request, news_id):
+    categories = Category.objects.all()
     news = get_object_or_404(News, id=news_id)
     if request.method == 'POST':
         form = NewsForm(request.POST, request.FILES, instance=news)
@@ -267,7 +269,7 @@ def edit_news(request, news_id):
             return redirect('add_news')
     else:
         form = NewsForm(instance=news)
-    return render(request, 'edit_news.html', {'form': form, 'news': news})
+    return render(request, 'edit_news.html', {'form': form, 'news': news, 'categories': categories})
 
 def delete_news(request, news_id):
     news = get_object_or_404(News, id=news_id)
@@ -334,16 +336,17 @@ def add_to_cart(request, product_id):
 
 @login_required
 def view_cart(request):
+    categories = Category.objects.all()
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     try:
         cart = user_profile.cart
         cart_products = CartProduct.objects.filter(cart=cart)
-        total_price = CartProduct.objects.filter(cart=cart).aggregate(Sum('product__price'))['product__price__sum']
+        total_price = sum(cart_product.product.price * cart_product.quantity for cart_product in cart_products)
     except Cart.DoesNotExist:
         cart_products = []
         total_price = 0
 
-    context = {'cart_products': cart_products, 'user_profile': user_profile, 'total_price': total_price}
+    context = {'cart_products': cart_products, 'user_profile': user_profile, 'total_price': total_price, 'categories':categories}
     return render(request, 'view_cart.html', context)
 
 @login_required
@@ -377,7 +380,8 @@ def checkout(request):
                 phone_number=form.cleaned_data['phone_number'],
                 email=form.cleaned_data['email'],
                 delivery_address=form.cleaned_data['delivery_address'],
-                comments=form.cleaned_data['comments']
+                comments=form.cleaned_data['comments'],
+                payment_choices=form.cleaned_data['payment_choices']
             )
             order.save()
 
@@ -428,8 +432,16 @@ def checkout(request):
 
 @login_required
 def user_orders(request):
+    categories = Category.objects.all()
     user = request.user
     orders = Order.objects.filter(user=user)
     
-    context = {'user': user, 'orders': orders}
+    context = {'user': user, 'orders': orders, 'categories':categories}
     return render(request, 'user_orders.html', context)
+
+def all_orders(request):
+    users = UserProfile.objects.all()
+    categories = Category.objects.all()
+    orders = Order.objects.all() 
+    context = {'orders': orders, 'categories':categories, 'users':users}
+    return render(request, 'all_orders.html', context)

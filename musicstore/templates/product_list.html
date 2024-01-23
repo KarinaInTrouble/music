@@ -31,15 +31,11 @@
       <a class="nav-link" href="{% url 'manager' %}">{{ user.username }}</a>
     </li>
   {% elif user.is_active %}
+  <li class="nav-item">           
+    <a class="nav-link" href="{% url 'view_cart' %}"><i class="bi bi-cart-plus-fill bi-5x"></i> Корзина </a>
+</li>
     <li class="nav-item">
       <a class="nav-link" href="{% url 'client' %}">{{ user.username }}</a>
-    </li>
-    <li class="nav-item">
-    <a class="nav-link" href="{% url 'view_cart' %}">Корзина
-    {% if cart_count > 0 %}
-    <span class="badge bg-secondary">{{ cart_count }}</span>
-    {% endif %}
-    </a>
     </li>
   {% endif %}
   <li class="nav-item">
@@ -110,12 +106,12 @@
                   <form method="post" action="{% url 'add_to_favorites' product.id %}" style="display: inline;">
                       {% csrf_token %}
                       <button type="submit" class="btn btn-dark" {% if is_favorite %}disabled{% endif %}>
-                          {% if is_favorite %}В избранном{% else %}Добавить в избранное{% endif %}
+                          {% if is_favorite %}В избранном{% else %}Избранное{% endif %}
                       </button>
                   </form>
                   <form method="post" action="{% url 'add_to_cart' product.id %}" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-dark">Добавить в корзину</button>
+                    <button type="submit" class="btn btn-success">Заказать</button>
                 </form>
               {% endif %}
           {% endif %}

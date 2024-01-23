@@ -70,9 +70,15 @@ class NewsCategoryForm(forms.ModelForm):
             'type': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-class OrderForm(forms.Form):
-    full_name = forms.CharField(label='ФИО', max_length=255)
-    phone_number = forms.CharField(label='Телефон', max_length=20)
-    email = forms.EmailField(label='Email')
-    delivery_address = forms.CharField(label='Адрес доставки', max_length=255)
-    comments = forms.CharField(label='Комментарии', widget=forms.Textarea, required=False)
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['full_name', 'phone_number', 'email', 'delivery_address', 'comments', 'payment_choices']
+        widgets = {
+            'full_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'delivery_address': forms.TextInput(attrs={'class': 'form-control'}),
+            'comments': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'payment_choices': forms.Select(attrs={'class': 'form-select'}),
+        }
