@@ -369,6 +369,15 @@ def remove_from_cart(request, product_id):
     return redirect('product_list', category_id=product.category.id)
 
 @login_required
+def user_orders(request):
+    categories = Category.objects.all()
+    user = request.user
+    orders = Order.objects.filter(user=user).order_by('-date_created')  # Сортировка в обратном порядке
+    
+    context = {'user': user, 'orders': orders, 'categories': categories}
+    return render(request, 'user_orders.html', context)
+
+@login_required
 def checkout(request):
     if request.method == 'POST':
         form = OrderForm(request.POST)
@@ -404,7 +413,7 @@ def checkout(request):
                 cart.products.clear()
 
                 # Перенаправляем пользователя после успешной обработки
-                return redirect('client')
+                return redirect('user_orders')
             except UserProfile.DoesNotExist:
                 # Обработка ситуации, когда у пользователя нет профиля
                 messages.warning(request, "Your profile is missing.")
@@ -430,14 +439,6 @@ def checkout(request):
     context = {'form': form, 'user_profile': user_profile, 'cart_products': cart_products, 'total_price': total_price}
     return render(request, 'checkout.html', context)
 
-@login_required
-def user_orders(request):
-    categories = Category.objects.all()
-    user = request.user
-    orders = Order.objects.filter(user=user)
-    
-    context = {'user': user, 'orders': orders, 'categories':categories}
-    return render(request, 'user_orders.html', context)
 
 def all_orders(request):
     users = UserProfile.objects.all()
