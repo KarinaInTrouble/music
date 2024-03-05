@@ -92,6 +92,7 @@
                 {% csrf_token %}
                 <button type="submit" class="btn btn-success">Заказать</button>
             </form>
+            <a href="{% url 'favs_delete' favorite.id %}" class="btn btn-danger">Удалить</a>
             </div>
           </div>
         </div>

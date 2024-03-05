@@ -290,6 +290,13 @@ def favorites(request):
     favorites = Favorite.objects.filter(user=user)
     return render(request, 'favorites.html', {'categories': categories,'favorites': favorites})
 
+def delete_favorites(request, favs_id):
+    favs = get_object_or_404(Favorite, id=favs_id)
+    favs.delete()
+    return redirect('favorites')
+
+
+
 @login_required
 def reviews(request):
     categories = Category.objects.all()
